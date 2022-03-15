@@ -6,15 +6,15 @@ To make this work we need to wrap our call to `cb` in either a `setImmediate` or
 
 ```js
 function doAsyncTask(cb) {
-  // cb();
+  //cb();
 
-  // setImmediate(() => {
-  //   console.log("Async Task Calling Callback");
-  //   cb();
-  // });
+  setImmediate(() => {
+    console.log("Async Task Calling Callback with setImmediate");
+    cb();
+  });
 
   process.nextTick(() => {
-    console.log("Async Task Calling Callback");
+    console.log("Async Task Calling Callback with process.nextTick");
     cb();
   });
 }
@@ -24,17 +24,17 @@ doAsyncTask(() => console.log(message));
 let message = "Callback Called";
 ```
 
-# Answer 2
+## Answer 2
 
 ```js
 const fs = require("fs");
 
 function readFileThenDo(next) {
-  fs.readFile("./blah.nofile", (err, data) => {
+  fs.readFile("./files/demofile.txt", {encoding: 'utf8'}, (err, data) => {
     if (err) {
       next(err);
     } else {
-      next(null, data);
+      next(data);
     }
   });
 }
@@ -48,7 +48,7 @@ readFileThenDo((err, data) => {
 });
 ```
 
-# Answer 3
+## Answer 3
 
 Or if the error is serious, you can throw the error as soon as you see it.
 
@@ -60,7 +60,7 @@ By the time the callback throws the error we have moved on from the try..catch, 
 const fs = require("fs");
 
 function readFileThenDo(next) {
-  fs.readFile("./blah.nofile", (err, data) => {
+  fs.readFile("./files/demofile.txt", (err, data) => {
     if (err) throw err;
     next(null, data);
   });
